@@ -11,7 +11,7 @@ void delaySec(int n){
 }
 std::string timeRemaining(std::time_t stop){
     std::time_t current = std::time(nullptr);
-    std::time_t diff = (std::time_t)std::difftime(current, stop);
+    std::time_t diff = (std::time_t)std::difftime(stop, current);
     int min = diff / 60;
     int sec = diff % 60;
     return std::to_string(min) + "m " + std::to_string(sec) + "s";
@@ -19,18 +19,21 @@ std::string timeRemaining(std::time_t stop){
 
 int main() {
     std::time_t currentTime, stopTime, t;
-    std::tm* timeStruct;
+    int min, sec;
+    std::tm *timeStruct;
     t = std::time(nullptr);
-    std::cout << t << std::endl;
     timeStruct = std::localtime(&t);
-    std::cout << "Input time interval (mm-ss): ";
-    std::cin >> std::get_time(timeStruct, "%M-%S");
-    stopTime = std::mktime(timeStruct);
-    std::cout << stopTime << std::endl;
+    std::cout << "Input time interval (mm:ss): ";
+    std::cin >> std::get_time(timeStruct, "%M:%S");
+    min = timeStruct->tm_min;
+    sec = timeStruct->tm_sec;
+    t = std::time(nullptr);
+    timeStruct = std::localtime(&t);
+    //std::cout << "min= " << min << " sec= " << sec << std::endl;
+    stopTime = std::mktime(timeStruct) + min*60 + sec;
     std::cout << "Starting!" <<std::endl;
 
     do{
-
         delaySec(1);
         std::cout << "time remaining: " << timeRemaining(stopTime) << std::endl;
         currentTime = std::time(nullptr);
